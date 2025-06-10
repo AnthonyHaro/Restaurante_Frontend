@@ -28,7 +28,7 @@ const AddToCartModal = ({ dish, onClose, onAddToCart }) => {
     }
 
     try {
-      const response = await fetch(`http://localhost:5000/api/cart/${user.email}`, {
+      const response = await fetch(`https://backend-restaurante-g8jr.onrender.com/api/cart/${user.email}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
