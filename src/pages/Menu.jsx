@@ -114,7 +114,7 @@ function Menu() {
                 <button
                   className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg transition"
                   onClick={() => setShowModal(cat)}
-                  data-testid={`add-dish-button-${cat}`} // Added test ID
+                  data-testid={`add-dish-button-${cat}`} 
                 >
                   ➕ Añadir Plato
                 </button>
@@ -145,7 +145,7 @@ function Menu() {
                     <button
                       onClick={() => handleClickAddToCart(dish)}
                       className="mt-4 w-full bg-amber-600 hover:bg-amber-700 text-white py-2 rounded-lg"
-                      data-testid={`add-to-cart-button-${dish.id}`} // Added test ID
+                      data-testid={`add-to-cart-button-${dish.id}`}
                     >
                       🛒 Agregar al carrito
                     </button>
@@ -155,7 +155,7 @@ function Menu() {
                         <button
                           onClick={() => requestDelete(dish.id)}
                           className="text-red-600 hover:text-red-800 text-xl"
-                          data-testid={`delete-dish-button-${dish.id}`} // Added test ID
+                          data-testid={`delete-dish-button-${dish.id}`} 
                         >
                           🗑️
                         </button>

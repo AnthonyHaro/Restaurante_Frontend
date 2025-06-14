@@ -2,7 +2,7 @@ import React from 'react';
 import cariucho from '../assets/cariucho.jpg';
 import colada from '../assets/colada_morada.jpg';
 import pristiños from '../assets/pristiños.jpg';
-
+import { Link } from 'react-router-dom';
 
 function Home() {
   return (
@@ -15,6 +15,7 @@ function Home() {
           Disfruta de una experiencia gastronómica única con nuestros platillos frescos y sabrosos.
         </p>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+          <Link to="/menu" href="#tradicionales"  className="block py-2 text-gray-700 font-bold">
           <div className="bg-white rounded-lg shadow-md overflow-hidden">
             <img src={cariucho} alt="Plato 1" className="w-full h-48 object-cover" />
             <div className="p-4">
@@ -22,6 +23,8 @@ function Home() {
               <p className="text-gray-600">Sabores auténticos que nos conectan con nuestras raíces y con el calor del hogar.</p>
             </div>
           </div>
+          </Link>
+          <Link to="/menu" href="#postres"  className="block py-2 text-gray-700 font-bold">
           <div className="bg-white rounded-lg shadow-md overflow-hidden">
             <img src={pristiños} alt="Plato 2" className="w-full h-48 object-cover" />
             <div className="p-4">
@@ -29,6 +32,8 @@ function Home() {
               <p className="text-gray-600">  Dulces caseros que despiertan recuerdos y endulzan cada momento.</p>
             </div>
           </div>
+          </Link>
+          <Link to="/menu" className="block py-2 text-gray-700 font-bold">
           <div className="bg-white rounded-lg shadow-md overflow-hidden">
             <img src={colada} alt="Plato 3" className="w-full h-48 object-cover" />
             <div className="p-4">
@@ -36,6 +41,7 @@ function Home() {
               <p className="text-gray-600">  Refresca el alma con nuestras bebidas tradicionales, llenas de historia y sabor.</p>
             </div>
           </div>
+          </Link>
         </div>
         <div className="bg-white rounded-lg shadow-md p-6 mb-8">
           <h3 className="text-xl font-semibold mb-2">Horarios de Atención</h3>
