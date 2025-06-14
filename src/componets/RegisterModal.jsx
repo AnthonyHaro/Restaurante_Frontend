@@ -158,7 +158,7 @@ function RegisterModal({ onClose, onSwitchToLogin, onRegisterSuccess }) {
           />
           {error && <p className="text-red-600 text-sm">{error}</p>}
           {successMsg && (
-            <div className="fixed z-50 absolute inset-0 bg-opacity-40 flex items-center justify-center rounded-xl">
+            <div className="fixed z-50 absolute inset-0 bg-black/40 bg-opacity-40 flex items-center justify-center rounded-xl">
               <div className="bg-white p-6 rounded-lg shadow-lg border max-w-sm text-center animate-fadeIn">
                 <h3 className="text-xl font-bold text-green-700 mb-2">¡Registro exitoso!</h3>
                 <p className="text-gray-700 mb-4">{successMsg}</p>
