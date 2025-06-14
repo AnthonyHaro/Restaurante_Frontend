@@ -15,36 +15,47 @@ function RegisterModal({ onClose, onSwitchToLogin, onRegisterSuccess }) {
   const [error, setError] = useState('');
   const [successMsg, setSuccessMsg] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
-
   const isTest = process.env.NODE_ENV === 'test';
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
+  const isValidEmail = (email) => {
+    const regex = /^[a-zA-Z0-9._%+-]{4,}@(gmail\.com|hotmail\.com|outlook\.com)$/;
+    return regex.test(email);
+  };
+
   const handleRegister = async (e) => {
     e.preventDefault();
 
     if (isSubmitting) return;
-
     setIsSubmitting(true);
     setError('');
     setSuccessMsg('');
 
     try {
-      if (!/^[A-Za-zÀ-ÿ\s]+$/.test(formData.name.trim())) {
+      const { name, email, address, password, contact, cedula } = formData;
+
+      if (!/^[A-Za-zÀ-ÿ\s]+$/.test(name.trim())) {
         setError('El nombre solo puede contener letras y espacios.');
         setIsSubmitting(false);
         return;
       }
 
-      if (formData.contact.length < 10) {
+      if (!isValidEmail(email)) {
+        setError('El correo debe tener al menos 4 caracteres antes del @ y ser gmail, hotmail u outlook.');
+        setIsSubmitting(false);
+        return;
+      }
+
+      if (contact.length < 10) {
         setError('El contacto debe tener al menos 10 dígitos.');
         setIsSubmitting(false);
         return;
       }
 
-      if (!verificarCedula(formData.cedula)) {
+      if (!verificarCedula(cedula)) {
         setError('La cédula ingresada no es válida.');
         setIsSubmitting(false);
         return;
@@ -52,17 +63,17 @@ function RegisterModal({ onClose, onSwitchToLogin, onRegisterSuccess }) {
 
       let users = [];
       if (!isTest) {
-        const usersResponse = await axios.get('https://backend-restaurante-g8jr.onrender.com/api/users');
-        users = usersResponse.data;
+        const response = await axios.get('https://backend-restaurante-g8jr.onrender.com/api/users');
+        users = response.data;
       }
 
-      if (users.find((user) => user.email === formData.email)) {
+      if (users.find((u) => u.email === email)) {
         setError('El correo ya está registrado.');
         setIsSubmitting(false);
         return;
       }
 
-      if (users.find((user) => user.cedula === formData.cedula)) {
+      if (users.find((u) => u.cedula === cedula)) {
         setError('La cédula ya está registrada.');
         setIsSubmitting(false);
         return;
@@ -74,25 +85,6 @@ function RegisterModal({ onClose, onSwitchToLogin, onRegisterSuccess }) {
 
       setSuccessMsg('¡Registro exitoso! Ahora puedes iniciar sesión.');
       setFormData({ name: '', email: '', address: '', password: '', contact: '', cedula: '' });
-
-      if (!isTest) {
-        try {
-          const loginResponse = await axios.post('https://backend-restaurante-g8jr.onrender.com/api/login', {
-            email: formData.email,
-            password: formData.password,
-          });
-          const user = loginResponse.data.user || loginResponse.data;
-          localStorage.setItem('user', JSON.stringify(user));
-          onRegisterSuccess();
-          onClose();
-        } catch (loginError) {
-          console.error('Error al iniciar sesión después del registro:', loginError);
-          setError('Registro exitoso, pero hubo un problema al iniciar sesión automáticamente.');
-        }
-      } else {
-        onRegisterSuccess();
-        onClose();
-      }
     } catch (err) {
       setError(err.response?.data?.message || 'Error al registrar');
     } finally {
@@ -115,7 +107,7 @@ function RegisterModal({ onClose, onSwitchToLogin, onRegisterSuccess }) {
             value={formData.name}
             onChange={handleChange}
             required
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brown-500"
+            className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-brown-500"
           />
           <input
             type="email"
@@ -124,7 +116,7 @@ function RegisterModal({ onClose, onSwitchToLogin, onRegisterSuccess }) {
             value={formData.email}
             onChange={handleChange}
             required
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brown-500"
+            className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-brown-500"
           />
           <input
             type="text"
@@ -133,7 +125,7 @@ function RegisterModal({ onClose, onSwitchToLogin, onRegisterSuccess }) {
             value={formData.cedula}
             onChange={handleChange}
             required
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brown-500"
+            className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-brown-500"
           />
           <input
             type="text"
@@ -142,7 +134,7 @@ function RegisterModal({ onClose, onSwitchToLogin, onRegisterSuccess }) {
             value={formData.address}
             onChange={handleChange}
             required
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brown-500"
+            className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-brown-500"
           />
           <input
             type="tel"
@@ -152,7 +144,7 @@ function RegisterModal({ onClose, onSwitchToLogin, onRegisterSuccess }) {
             onChange={handleChange}
             required
             pattern="\d{10,}"
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brown-500"
+            className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-brown-500"
           />
           <input
             type="password"
@@ -162,13 +154,32 @@ function RegisterModal({ onClose, onSwitchToLogin, onRegisterSuccess }) {
             onChange={handleChange}
             minLength={6}
             required
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brown-500"
+            className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-brown-500"
           />
-          {error && <p className="text-red-600 text-sm" data-testid="error">{error}</p>}
-          {successMsg && <p className="text-green-600 text-sm">{successMsg}</p>}
+          {error && <p className="text-red-600 text-sm">{error}</p>}
+          {successMsg && (
+            <div className="fixed z-50 absolute inset-0 bg-opacity-40 flex items-center justify-center rounded-xl">
+              <div className="bg-white p-6 rounded-lg shadow-lg border max-w-sm text-center animate-fadeIn">
+                <h3 className="text-xl font-bold text-green-700 mb-2">¡Registro exitoso!</h3>
+                <p className="text-gray-700 mb-4">{successMsg}</p>
+                <button
+                  onClick={() => {
+                    onClose();
+                    setTimeout(() => {
+                      onSwitchToLogin();
+                    }, 300);
+                  }}
+                  className="bg-green-600 hover:bg-green-700 text-white px-5 py-2 rounded-lg shadow transition"
+                >
+                  Aceptar
+                </button>
+              </div>
+            </div>
+          )}
+
           <button
             type="submit"
-            className="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-2 rounded-lg transition duration-200"
+            className="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-2 rounded-lg transition"
           >
             Registrarse
           </button>

@@ -17,7 +17,6 @@ function Footer() {
           <h3 className="text-lg font-bold mb-2">Síguenos</h3>
           <div className="flex gap-4 mt-2">
             <a href="https://www.facebook.com/ELRINCONDEMAMITAROSA/?locale=es_LA" className="text-white hover:text-gray-300"><FaFacebook size={20} /></a>
-            <a href="#" className="text-white hover:text-gray-300"><FaInstagram size={20} /></a>
           </div>
         </div>
       </div>

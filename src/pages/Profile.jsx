@@ -40,7 +40,7 @@ function Profile() {
 
   const fetchUsers = async () => {
     if (isTest) return;
-    setLoading(true); // Inicia la carga
+    setLoading(true); 
     try {
       const res = await fetch('https://backend-restaurante-g8jr.onrender.com/api/users');
       const users = await res.json();
@@ -48,14 +48,13 @@ function Profile() {
     } catch (error) {
       console.error('Error al obtener usuarios:', error);
     } finally {
-      setLoading(false); // Finaliza la carga, independientemente del resultado
+      setLoading(false); 
     }
   };
 
   const handleDeleteUser = async (email) => {
     if (isTest) return;
     try {
-      // Optimistic update
       setUsersList(prevUsers => prevUsers.filter(user => user.email !== email));
 
       const res = await fetch(`https://backend-restaurante-g8jr.onrender.com/api/users/${email}`, {
@@ -64,12 +63,10 @@ function Profile() {
 
       if (!res.ok) {
         throw new Error('Error al eliminar usuario');
-        // If the deletion fails, you might want to revert the optimistic update
-        // setUsersList(prevUsers => { /* Code to revert the update */ });
       }
     } catch (error) {
       console.error('Error al eliminar usuario:', error);
-      // Handle the error appropriately, maybe show a message to the user
+
     }
   };
 
@@ -204,10 +201,6 @@ function Profile() {
           onSwitchToLogin={() => {
             setShowLogin(true);
             setShowRegister(false);
-          }}
-          onRegisterSuccess={() => {
-            setShowRegister(false);
-            setShowLogin(true);
           }}
         />
         

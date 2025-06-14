@@ -7,6 +7,7 @@ function Cart() {
   const [modalOpen, setModalOpen] = useState(false);
   const [address, setAddress] = useState('');
   const [contact, setContact] = useState('');
+  const [formError, setFormError] = useState('');
   const user = JSON.parse(localStorage.getItem('user'));
 
   const fetchCartFromServer = async () => {
@@ -55,9 +56,20 @@ function Cart() {
   const handlePay = () => {
     if (!cart.length) return alert('El carrito está vacío.');
     setModalOpen(true); 
-  };
+    };
 
   const handleSubmitOrder = async () => {
+    setFormError('');
+
+    if (!address.trim()) {
+      setFormError('Por favor, ingresa una dirección válida.');
+      return;
+    }
+
+    if (!/^\d{10,}$/.test(contact)) {
+      setFormError('Por favor, ingresa un número de contacto válido de al menos 10 dígitos.');
+      return;
+    }
     try {
       const response = await fetch('https://backend-restaurante-g8jr.onrender.com/api/orders', {
         method: 'POST',
@@ -73,7 +85,8 @@ function Cart() {
 
       if (!response.ok) {
         const error = await response.json();
-        return alert(error.message || 'Error al registrar el pedido.');
+        setFormError(error.message || 'Error al registrar el pedido.');
+        return;
       }
 
       await fetch(`https://backend-restaurante-g8jr.onrender.com/api/cart/${user.email}`, {
@@ -85,7 +98,7 @@ function Cart() {
       setModalOpen(false); 
     } catch (error) {
       console.error('Error al procesar el pago:', error);
-      alert('Ocurrió un error al procesar el pago.');
+      setFormError('Ocurrió un error al procesar el pago.');
     }
   };
 
@@ -94,6 +107,7 @@ function Cart() {
       fetchCartFromServer();
     }
   }, []);
+
 
   return (
     <div className="p-4 max-w-4xl mx-auto min-h-80 flex flex-col">
@@ -175,7 +189,9 @@ function Cart() {
                 placeholder="Ingresa tu contacto"
               />
             </div>
-
+            {formError && (
+              <p className="text-red-600 text-sm font-medium mb-4 text-center">{formError}</p>
+            )}
             <button
               onClick={handleSubmitOrder}
               className="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-2 rounded-md transition duration-200"
