@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Trash2 } from 'lucide-react';
 
-function Cart() {
+function Carta() {
   const [cart, setCart] = useState([]);
   const [total, setTotal] = useState(0);
   const [modalOpen, setModalOpen] = useState(false);
@@ -15,6 +15,7 @@ function Cart() {
       const response = await fetch(`https://backend-restaurante-g8jr.onrender.com/api/cart/${user.email}`);
       if (response.ok) {
         const data = await response.json();
+        console.log('🛒 Carrito recibido del backend:', data); 
         setCart(data);
         const calculatedTotal = data.reduce(
           (sum, item) => sum + item.price * item.quantity,
@@ -45,7 +46,8 @@ function Cart() {
       if (response.ok) {
         fetchCartFromServer();
       } else {
-        alert('No se pudo eliminar el artículo.');
+         const error = await response.json();
+         alert(`No se pudo eliminar el artículo: ${error.message}`);
       }
     } catch (error) {
       console.error('Error al eliminar el artículo:', error);
@@ -132,7 +134,9 @@ function Cart() {
                   <p className="text-green-600 font-bold text-sm">${item.price * item.quantity}</p>
                 </div>
                 <button
-                  onClick={() => handleRemoveItem(item.id)}
+                  onClick={() => {
+                    console.log('Eliminar item id:', item.dishId);
+                    handleRemoveItem(item.dishId);}}
                   className="text-red-500 hover:text-red-700 absolute top-0 right-0 p-1"
                   title="Quitar del carrito"
                 >
@@ -212,4 +216,4 @@ function Cart() {
   );
 }
 
-export default Cart;
+export default Carta;

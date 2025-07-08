@@ -1,4 +1,6 @@
 import React, { useEffect, useState } from 'react';
+import { Helmet } from 'react-helmet-async';
+
 import AddDishModal from '../componets/AddDishModal';
 import EditDishModal from '../componets/EditDishModal';
 import ConfirmModal from '../componets/ConfirmModal';
@@ -76,30 +78,28 @@ function Menu() {
 
   return (
     <div className="relative min-h-screen bg-gray-100">
+      {/* SEO */}
+      <Helmet>
+        <title>Menú | El Rincón de Mamita Rosa</title>
+        <meta
+          name="description"
+          content="Explora nuestro menú de platos tradicionales, postres y bebidas típicas ecuatorianas."
+        />
+      </Helmet>
+
       <div
         className={`p-6 max-w-7xl mx-auto transition-all duration-300 ${
-          isAnyModalOpen
-            ? 'blur-sm pointer-events-none select-none'
-            : ''
+          isAnyModalOpen ? 'blur-sm pointer-events-none select-none' : ''
         }`}
       >
         <div className="flex justify-center gap-6 mb-10">
-          <a
-            href="#tradicionales"
-            className="text-green-700 font-medium hover:underline"
-          >
+          <a href="#tradicionales" className="text-green-700 font-medium hover:underline">
             Tradicionales
           </a>
-          <a
-            href="#postres"
-            className="text-green-700 font-medium hover:underline"
-          >
+          <a href="#postres" className="text-green-700 font-medium hover:underline">
             Postres
           </a>
-          <a
-            href="#bebidas"
-            className="text-green-700 font-medium hover:underline"
-          >
+          <a href="#bebidas" className="text-green-700 font-medium hover:underline">
             Bebidas
           </a>
         </div>
