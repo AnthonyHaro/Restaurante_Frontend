@@ -1,5 +1,4 @@
 import React from 'react';
-import { Helmet } from 'react-helmet-async';
 import { Link } from 'react-router-dom';
 
 import cariucho from '../assets/cariucho.jpg';
@@ -9,15 +8,6 @@ import pristiños from '../assets/pristiños.jpg';
 function Home() {
   return (
     <div className="bg-gradient-to-b from-amber-50 to-white p-6">
-      {/* SEO con react-helmet-async */}
-      <Helmet>
-        <title>Inicio | El Rincón de Mamita Rosa</title>
-        <meta
-          name="description"
-          content="Bienvenido a El Rincón de Mamita Rosa. Descubre platos tradicionales ecuatorianos, postres caseros y bebidas típicas."
-        />
-      </Helmet>
-
       <div className="max-w-6xl mx-auto text-center">
         <h1 className="text-4xl md:text-5xl font-extrabold mb-4 text-amber-700 drop-shadow-sm">
           ¡Ordena ya de nuestro delicioso menú!

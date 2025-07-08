@@ -1,6 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import { Helmet } from 'react-helmet-async';
-
 import AddDishModal from '../componets/AddDishModal';
 import EditDishModal from '../componets/EditDishModal';
 import ConfirmModal from '../componets/ConfirmModal';
@@ -78,15 +76,6 @@ function Menu() {
 
   return (
     <div className="relative min-h-screen bg-gray-100">
-      {/* SEO */}
-      <Helmet>
-        <title>Menú | El Rincón de Mamita Rosa</title>
-        <meta
-          name="description"
-          content="Explora nuestro menú de platos tradicionales, postres y bebidas típicas ecuatorianas."
-        />
-      </Helmet>
-
       <div
         className={`p-6 max-w-7xl mx-auto transition-all duration-300 ${
           isAnyModalOpen ? 'blur-sm pointer-events-none select-none' : ''

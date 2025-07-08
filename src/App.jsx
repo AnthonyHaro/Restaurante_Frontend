@@ -9,11 +9,9 @@ import Profile from "../src/pages/Profile";
 import Navbar from './componets/Navbar';
 import Footer from './componets/Footer';
 import './index.css'
-import { HelmetProvider } from 'react-helmet-async';
 
 function App() {
   return (
-    <HelmetProvider>
     <>
       <Navbar />
       <Routes>
@@ -26,7 +24,6 @@ function App() {
       </Routes>
       <Footer />
     </>
-    </HelmetProvider>
   );
 }
 

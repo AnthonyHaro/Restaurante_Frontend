@@ -1,19 +1,9 @@
 import React from 'react';
-import { Helmet } from 'react-helmet-async';
 import { FaWhatsapp } from 'react-icons/fa';
 
 function Contact() {
   return (
     <div className="max-w-4xl mx-auto px-4 py-10 text-center bg-gray-50 rounded-lg shadow-md">
-      {/* SEO con react-helmet-async */}
-      <Helmet>
-        <title>Contáctanos | El Rincón de Mamita Rosa</title>
-        <meta
-          name="description"
-          content="Comunícate con El Rincón de Mamita Rosa. Encuentra nuestros teléfonos, WhatsApp, dirección y horarios de atención."
-        />
-      </Helmet>
-
       <h1 className="text-4xl font-bold text-gray-800 mb-4">Contáctanos</h1>
       <p className="text-gray-600 mb-8">
         ¿Nos necesitas? Visítanos en nuestra ubicación o contáctanos por teléfono. Estaremos encantados de ayudarte.

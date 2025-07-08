@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { Helmet } from 'react-helmet-async';
 import nosotros1 from '../assets/nosotro.jpg';
 import nosotros2 from '../assets/nosotro2.jpg';
 import nosotros3 from '../assets/nosotro3.jpg';
@@ -24,14 +23,6 @@ function About() {
 
   return (
     <>
-      <Helmet>
-        <title>Nosotros - El Rincón de Mamita Rosa</title>
-        <meta
-          name="description"
-          content="Conoce la historia y la esencia de El Rincón de Mamita Rosa, un restaurante tradicional ecuatoriano que ofrece comida casera, auténtica y llena de sabor."
-        />
-      </Helmet>
-
       <div className="max-w-6xl mx-auto px-4 py-12">
         <div className="grid md:grid-cols-2 gap-8 items-center">
           <div>
