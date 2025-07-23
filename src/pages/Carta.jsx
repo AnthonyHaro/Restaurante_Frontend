@@ -7,6 +7,7 @@ function Carta() {
   const [modalOpen, setModalOpen] = useState(false);
   const [address, setAddress] = useState('');
   const [contact, setContact] = useState('');
+  const [observation, setObservation] = useState('');
   const [formError, setFormError] = useState('');
   const user = JSON.parse(localStorage.getItem('user'));
 
@@ -15,7 +16,6 @@ function Carta() {
       const response = await fetch(`https://backend-restaurante-g8jr.onrender.com/api/cart/${user.email}`);
       if (response.ok) {
         const data = await response.json();
-        console.log('🛒 Carrito recibido del backend:', data); 
         setCart(data);
         const calculatedTotal = data.reduce(
           (sum, item) => sum + item.price * item.quantity,
@@ -46,19 +46,18 @@ function Carta() {
       if (response.ok) {
         fetchCartFromServer();
       } else {
-         const error = await response.json();
-         alert(`No se pudo eliminar el artículo: ${error.message}`);
+        const error = await response.json();
+        alert(`No se pudo eliminar el artículo: ${error.message}`);
       }
     } catch (error) {
       console.error('Error al eliminar el artículo:', error);
-      alert('Error al conectar con el servidor.');
     }
   };
 
   const handlePay = () => {
     if (!cart.length) return alert('El carrito está vacío.');
-    setModalOpen(true); 
-    };
+    setModalOpen(true);
+  };
 
   const handleSubmitOrder = async () => {
     setFormError('');
@@ -72,6 +71,7 @@ function Carta() {
       setFormError('Por favor, ingresa un número de contacto válido de al menos 10 dígitos.');
       return;
     }
+
     try {
       const response = await fetch('https://backend-restaurante-g8jr.onrender.com/api/orders', {
         method: 'POST',
@@ -82,6 +82,7 @@ function Carta() {
           total,
           address,
           contact,
+          observation,
         }),
       });
 
@@ -97,7 +98,7 @@ function Carta() {
 
       setCart([]);
       setTotal(0);
-      setModalOpen(false); 
+      setModalOpen(false);
     } catch (error) {
       console.error('Error al procesar el pago:', error);
       setFormError('Ocurrió un error al procesar el pago.');
@@ -109,7 +110,6 @@ function Carta() {
       fetchCartFromServer();
     }
   }, []);
-
 
   return (
     <div className="p-4 max-w-4xl mx-auto min-h-80 flex flex-col">
@@ -134,9 +134,7 @@ function Carta() {
                   <p className="text-green-600 font-bold text-sm">${item.price * item.quantity}</p>
                 </div>
                 <button
-                  onClick={() => {
-                    console.log('Eliminar item id:', item.dishId);
-                    handleRemoveItem(item.dishId);}}
+                  onClick={() => handleRemoveItem(item.dishId)}
                   className="text-red-500 hover:text-red-700 absolute top-0 right-0 p-1"
                   title="Quitar del carrito"
                 >
@@ -164,23 +162,21 @@ function Carta() {
       {modalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-sm animate-fade-in">
           <div className="bg-white w-full max-w-md p-6 rounded-2xl shadow-xl relative">
-            <h2 className="text-2xl font-semibold text-gray-800 mb-6 text-center">Información de Entrega</h2>
+            <h2 className="text-2xl font-semibold text-gray-800 mb-4 text-center">Información de Entrega</h2>
+            <p className="text-center text-sm text-gray-500 mb-6">Por favor, confirma o actualiza la información para la entrega.</p>
 
             <div className="mb-4">
               <label className="block text-sm font-medium text-gray-700 mb-1">Dirección de Entrega:</label>
               <input
                 type="text"
                 value={address}
-                onChange={(e) => {
-                  const onlyValid = e.target.value.replace(/[^a-zA-Z0-9\s.]/g, '');
-                  setAddress(onlyValid);
-                }}
-                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                onChange={(e) => setAddress(e.target.value)}
+                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
                 placeholder="Ingresa tu dirección"
               />
             </div>
 
-            <div className="mb-6">
+            <div className="mb-4">
               <label className="block text-sm font-medium text-gray-700 mb-1">Contacto:</label>
               <input
                 type="text"
@@ -189,13 +185,26 @@ function Carta() {
                   const onlyNumbers = e.target.value.replace(/[^0-9]/g, '');
                   setContact(onlyNumbers);
                 }}
-                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
                 placeholder="Ingresa tu contacto"
               />
             </div>
+
+            <div className="mb-6">
+              <label className="block text-sm font-medium text-gray-700 mb-1">Observaciones:</label>
+              <textarea
+                value={observation}
+                onChange={(e) => setObservation(e.target.value)}
+                rows={3}
+                placeholder="Por ejemplo: sin cebolla, entregar en portería..."
+                className="w-full px-4 py-2 border border-gray-300 rounded-md resize-none focus:outline-none focus:ring-2 focus:ring-green-500"
+              />
+            </div>
+
             {formError && (
               <p className="text-red-600 text-sm font-medium mb-4 text-center">{formError}</p>
             )}
+
             <button
               onClick={handleSubmitOrder}
               className="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-2 rounded-md transition duration-200"

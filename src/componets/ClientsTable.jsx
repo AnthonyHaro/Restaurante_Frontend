@@ -1,10 +1,10 @@
-import React from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import ConfirmModal from '../componets/ConfirmModal';
-import { useState } from 'react';
 
 function ClientsTable({ users, onDeleteUser }) {
   const [emailToDelete, setEmailToDelete] = useState(null);
+  const [searchTerm, setSearchTerm] = useState('');
 
   const requestDelete = (email) => {
     setEmailToDelete(email);
@@ -19,9 +19,26 @@ function ClientsTable({ users, onDeleteUser }) {
     setEmailToDelete(null);
   };
 
+  const filteredUsers = users.filter(user =>
+    user.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   return (
     <div className="p-6">
-      <h2 className="text-2xl font-bold mb-6 text-center text-black-700">Clientes Registrados</h2>
+      <h2 className="text-2xl font-bold mb-4 text-center text-black-700">
+        Clientes Registrados
+      </h2>
+
+      {/* Buscador */}
+      <div className="mb-4 max-w-md mx-auto">
+        <input
+          type="text"
+          placeholder="Buscar cliente por nombre..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className="w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-amber-600"
+        />
+      </div>
 
       <div className="overflow-x-auto">
         <table className="min-w-full bg-white border border-gray-200 shadow rounded-xl overflow-hidden text-sm">
@@ -34,8 +51,8 @@ function ClientsTable({ users, onDeleteUser }) {
             </tr>
           </thead>
           <tbody>
-            {users && users.length > 0 ? (
-              users.map(user => (
+            {filteredUsers.length > 0 ? (
+              filteredUsers.map(user => (
                 <tr key={user.email} className="border-t border-gray-200 hover:bg-gray-50">
                   <td className="py-3 px-4">{user.name}</td>
                   <td className="py-3 px-4">{user.email}</td>
@@ -53,7 +70,7 @@ function ClientsTable({ users, onDeleteUser }) {
             ) : (
               <tr>
                 <td colSpan="4" className="text-center py-6 text-gray-500 italic">
-                  No hay clientes registrados.
+                  No se encontraron clientes.
                 </td>
               </tr>
             )}

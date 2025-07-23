@@ -7,7 +7,8 @@ function OrdersTable({ currentUser }) {
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [showDetails, setShowDetails] = useState(false);
   const [pendingStatusChange, setPendingStatusChange] = useState(null);
-
+  const [searchTerm, setSearchTerm] = useState('');
+  const [filterStatus, setFilterStatus] = useState('');
   const isAdmin = currentUser.email === 'admin@gmail.com';
 
   useEffect(() => {
@@ -56,11 +57,39 @@ function OrdersTable({ currentUser }) {
       </p>
     );
 
+  const filteredOrders = orders.filter(order => {
+    const matchesName = order.name?.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesStatus = filterStatus === '' || order.status === filterStatus;
+    return matchesName && matchesStatus;
+  });
+
   return (
     <div className="p-6">
       <h2 className="text-3xl font-extrabold mb-8 text-center text-black-700 tracking-wide">
         Pedidos
       </h2>
+
+      {/* Buscador y filtro */}
+      <div className="flex flex-col md:flex-row gap-4 items-center justify-between px-4 py-4 bg-white border border-gray-200 rounded-md mb-4">
+        <input
+          type="text"
+          value={searchTerm}
+          onChange={e => setSearchTerm(e.target.value)}
+          placeholder="Buscar cliente por nombre..."
+          className="border border-gray-300 rounded-md px-4 py-2 w-full md:w-64 focus:outline-none focus:ring-2 focus:ring-amber-500"
+        />
+        <select
+          value={filterStatus}
+          onChange={e => setFilterStatus(e.target.value)}
+          className="border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500"
+        >
+          <option value="">Todos los estados</option>
+          <option value="Pendiente">Pendiente</option>
+          <option value="Enviado">Enviado</option>
+          <option value="Entregado">Entregado</option>
+        </select>
+      </div>
+
       <div className="overflow-x-auto rounded-lg shadow-lg border border-gray-200">
         <table className="min-w-full bg-white text-sm">
           <thead className="bg-amber-600 text-white">
@@ -74,13 +103,13 @@ function OrdersTable({ currentUser }) {
             </tr>
           </thead>
           <tbody>
-            {orders.map(order => (
+            {filteredOrders.map(order => (
               <tr
                 key={order.id}
                 className="border-b border-gray-200 hover:bg-amber-50 transition-colors duration-200"
               >
                 <td className="py-3 px-6 font-medium text-amber-700">{order.displayId}</td>
-                <td className="py-3 px-6 text-gray-700 truncate max-w-xs">{order.email}</td>
+                <td className="py-3 px-6 text-gray-700 truncate max-w-xs">{order.name || order.email}</td>
                 <td className="py-3 px-6 text-gray-600">
                   {new Date(order.date).toLocaleString()}
                 </td>
@@ -129,6 +158,7 @@ function OrdersTable({ currentUser }) {
         </table>
       </div>
 
+      
       {/* Modal de detalles */}
       {showDetails && selectedOrder && (
         <div
@@ -163,6 +193,12 @@ function OrdersTable({ currentUser }) {
             <div className="mb-6">
               <h4 className="text-lg font-semibold text-gray-800 mb-2">Contacto</h4>
               <p className="text-gray-600">{selectedOrder.contact || 'No proporcionado'}</p>
+            </div>
+            <div className="mb-6">
+              <h4 className="text-lg font-semibold text-gray-800 mb-2">Observación</h4>
+              <p className="text-gray-600 whitespace-pre-line">
+                {selectedOrder.observation || 'No se añadió ninguna observación.'}
+              </p>
             </div>
 
             <div className="mb-6">
@@ -256,3 +292,4 @@ function OrdersTable({ currentUser }) {
 }
 
 export default OrdersTable;
+
