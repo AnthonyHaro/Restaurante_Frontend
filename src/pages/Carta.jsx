@@ -3,7 +3,9 @@ import { Trash2 } from 'lucide-react';
 
 function Carta() {
   const [cart, setCart] = useState([]);
-  const [total, setTotal] = useState(0);
+  const [subtotal, setSubtotal] = useState(0);
+  const [iva, setIva] = useState(0);
+  const [envio, setEnvio] = useState(2); 
   const [modalOpen, setModalOpen] = useState(false);
   const [address, setAddress] = useState('');
   const [contact, setContact] = useState('');
@@ -17,11 +19,17 @@ function Carta() {
       if (response.ok) {
         const data = await response.json();
         setCart(data);
-        const calculatedTotal = data.reduce(
+
+        const calculatedSubtotal = data.reduce(
           (sum, item) => sum + item.price * item.quantity,
           0
         );
-        setTotal(calculatedTotal);
+        setSubtotal(calculatedSubtotal);
+
+        const ivaRate = 0.12;
+        setIva(calculatedSubtotal * ivaRate);
+
+
         const userResponse = await fetch(`https://backend-restaurante-g8jr.onrender.com/api/users/${user.email}`);
         if (userResponse.ok) {
           const userData = await userResponse.json();
@@ -73,6 +81,8 @@ function Carta() {
     }
 
     try {
+      const total = subtotal + iva + envio;
+
       const response = await fetch('https://backend-restaurante-g8jr.onrender.com/api/orders', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -97,7 +107,8 @@ function Carta() {
       });
 
       setCart([]);
-      setTotal(0);
+      setSubtotal(0);
+      setIva(0);
       setModalOpen(false);
     } catch (error) {
       console.error('Error al procesar el pago:', error);
@@ -131,7 +142,7 @@ function Carta() {
                   <h3 className="font-semibold">{item.name}</h3>
                   <p className="text-sm text-gray-600">{item.description}</p>
                   <p className="text-sm">Cantidad: {item.quantity}</p>
-                  <p className="text-green-600 font-bold text-sm">${item.price * item.quantity}</p>
+                  <p className="text-green-600 font-bold text-sm">${(item.price * item.quantity).toFixed(2)}</p>
                 </div>
                 <button
                   onClick={() => handleRemoveItem(item.dishId)}
@@ -147,7 +158,17 @@ function Carta() {
           <div className="bg-gray-100 p-4 rounded shadow-md h-fit">
             <h3 className="text-lg font-semibold mb-2">Finalizar compra</h3>
             <p className="text-gray-700">
-              Total: <span className="font-bold">${total}</span>
+              Subtotal: <span className="font-bold">${subtotal.toFixed(2)}</span>
+            </p>
+            <p className="text-gray-700">
+              IVA (12%): <span className="font-bold">${iva.toFixed(2)}</span>
+            </p>
+            <p className="text-gray-700">
+              Envío: <span className="font-bold">${envio.toFixed(2)}</span>
+            </p>
+            <hr className="my-2" />
+            <p className="text-gray-900 text-lg">
+              Total: <span className="font-bold">${(subtotal + iva + envio).toFixed(2)}</span>
             </p>
             <button
               onClick={handlePay}

@@ -23,13 +23,22 @@ function OrdersTable({ currentUser }) {
       .finally(() => setLoading(false));
   }, [currentUser, isAdmin]);
 
-  const handleStatusSelect = (id, newStatus) => {
+  const handleStatusSelect = (id, newStatus, currentStatus) => {
+    if (currentStatus === 'Entregado') return;
     setPendingStatusChange({ id, newStatus });
   };
 
   const confirmStatusChange = () => {
     if (!pendingStatusChange) return;
     const { id, newStatus } = pendingStatusChange;
+
+    const order = orders.find(o => o.id === id);
+    if (order?.status === 'Entregado') {
+      alert('No se puede cambiar el estado de un pedido entregado.');
+      setPendingStatusChange(null);
+      return;
+    }
+
     fetch(`https://backend-restaurante-g8jr.onrender.com/api/orders/${id}/status`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
@@ -68,8 +77,6 @@ function OrdersTable({ currentUser }) {
       <h2 className="text-3xl font-extrabold mb-8 text-center text-black-700 tracking-wide">
         Pedidos
       </h2>
-
-      {/* Buscador y filtro */}
       <div className="flex flex-col md:flex-row gap-4 items-center justify-between px-4 py-4 bg-white border border-gray-200 rounded-md mb-4">
         <input
           type="text"
@@ -117,8 +124,11 @@ function OrdersTable({ currentUser }) {
                   {isAdmin ? (
                     <select
                       value={order.status}
-                      onChange={e => handleStatusSelect(order.id, e.target.value)}
-                      className="border border-gray-300 rounded-md px-3 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500"
+                      onChange={e => handleStatusSelect(order.id, e.target.value, order.status)}
+                      className={`border border-gray-300 rounded-md px-3 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 ${
+                        order.status === 'Entregado' ? 'bg-gray-200 cursor-not-allowed' : ''
+                      }`}
+                      disabled={order.status === 'Entregado'}
                     >
                       <option value="Pendiente">Pendiente</option>
                       <option value="Enviado">Enviado</option>
@@ -158,7 +168,6 @@ function OrdersTable({ currentUser }) {
         </table>
       </div>
 
-      
       {/* Modal de detalles */}
       {showDetails && selectedOrder && (
         <div
@@ -222,10 +231,32 @@ function OrdersTable({ currentUser }) {
                 <p className="text-gray-500 italic">Este pedido no tiene detalles.</p>
               )}
             </div>
+            {(() => {
+              const subtotal = selectedOrder.items?.reduce(
+                (sum, item) => sum + item.price * item.quantity,
+                0
+              ) || 0;
 
-            <div className="text-right font-extrabold text-xl text-amber-700">
-              Total: <span className="text-green-600">${selectedOrder.total.toFixed(2)}</span>
-            </div>
+              const iva = subtotal * 0.12;
+              const shippingCost = 2;
+              const total = subtotal + iva + shippingCost;
+
+              return (
+                <>
+                  <div className="text-right font-semibold text-gray-700 mt-4 space-y-1">
+                    <p>
+                      IVA (12%): <span className="text-gray-900">${iva.toFixed(2)}</span>
+                    </p>
+                    <p>
+                      Costo de envío: <span className="text-gray-900">${shippingCost.toFixed(2)}</span>
+                    </p>
+                  </div>
+                  <div className="text-right font-extrabold text-xl text-amber-700">
+                    Total: <span className="text-green-600">${total.toFixed(2)}</span>
+                  </div>
+                </>
+              );
+            })()}
           </div>
         </div>
       )}
@@ -292,4 +323,3 @@ function OrdersTable({ currentUser }) {
 }
 
 export default OrdersTable;
-

@@ -5,6 +5,7 @@ function LoginModal({ onClose, onSwitchToRegister, onLoginSuccess }) {
   const [formData, setFormData] = useState({ email: '', password: '' });
   const [error, setError] = useState('');
   const [successMsg, setSuccessMsg] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -28,7 +29,6 @@ function LoginModal({ onClose, onSwitchToRegister, onLoginSuccess }) {
       localStorage.setItem('user', JSON.stringify(adminUser));
       setSuccessMsg('Inicio de sesión exitoso como administrador');
       onLoginSuccess();
-      //onClose();
       return;
     }
 
@@ -55,7 +55,9 @@ function LoginModal({ onClose, onSwitchToRegister, onLoginSuccess }) {
         >
           &times;
         </button>
-        <h2 className="text-2xl font-bold mb-5 text-center text-gray-800">Disfruta de deliciosas comidas ingresando a tu cuenta</h2>
+        <h2 className="text-2xl font-bold mb-5 text-center text-gray-800">
+          Disfruta de deliciosas comidas ingresando a tu cuenta
+        </h2>
         <form onSubmit={handleLogin} className="space-y-4">
           <div>
             <input
@@ -68,16 +70,23 @@ function LoginModal({ onClose, onSwitchToRegister, onLoginSuccess }) {
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brown-500"
             />
           </div>
-          <div>
+          <div className="relative">
             <input
-              type="password"
+              type={showPassword ? 'text' : 'password'} 
               name="password"
               placeholder="Contraseña"
               value={formData.password}
               onChange={handleChange}
               required
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brown-500"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brown-500 pr-10"
             />
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute right-3 top-1/2 transform -translate-y-1/2 text-sm text-gray-600 hover:text-gray-900"
+            >
+              {showPassword ? '🙈' : '👁️'} 
+            </button>
           </div>
           {error && <p className="text-red-600 text-sm">{error}</p>}
           {successMsg && <p className="text-green-600 text-sm">{successMsg}</p>}

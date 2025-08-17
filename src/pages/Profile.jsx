@@ -14,7 +14,10 @@ function Profile() {
   const [showChangePassword, setShowChangePassword] = useState(false);
   const [activeSection, setActiveSection] = useState('info');
   const [usersList, setUsersList] = useState([]);
-  const [loading, setLoading] = useState(false); 
+  const [loading, setLoading] = useState(false);
+  
+  // Para controlar visibilidad del mensaje de bienvenida
+  const [welcomeMessageVisible, setWelcomeMessageVisible] = useState(false);
 
   const isAdmin = userData?.email === 'admin@gmail.com';
   const isTest = process.env.NODE_ENV === 'test';
@@ -25,11 +28,19 @@ function Profile() {
       try {
         setUserData(JSON.parse(storedUser));
         setIsLoggedIn(true);
+        setWelcomeMessageVisible(true); 
       } catch (err) {
         console.error('Error al analizar user del localStorage:', err);
       }
     }
   }, []);
+
+  useEffect(() => {
+    if (welcomeMessageVisible) {
+      const timer = setTimeout(() => setWelcomeMessageVisible(false), 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [welcomeMessageVisible]);
 
   const handleLogout = () => {
     localStorage.removeItem('user');
@@ -40,7 +51,7 @@ function Profile() {
 
   const fetchUsers = async () => {
     if (isTest) return;
-    setLoading(true); 
+    setLoading(true);
     try {
       const res = await fetch('https://backend-restaurante-g8jr.onrender.com/api/users');
       const users = await res.json();
@@ -48,7 +59,7 @@ function Profile() {
     } catch (error) {
       console.error('Error al obtener usuarios:', error);
     } finally {
-      setLoading(false); 
+      setLoading(false);
     }
   };
 
@@ -66,7 +77,6 @@ function Profile() {
       }
     } catch (error) {
       console.error('Error al eliminar usuario:', error);
-
     }
   };
 
@@ -80,6 +90,25 @@ function Profile() {
 
   return (
     <div className="relative min-h-screen bg-gray-100">
+      {/* Mensaje de bienvenida fijo arriba */}
+      {isLoggedIn && welcomeMessageVisible && (
+        <div
+          className="
+            fixed top-6 left-1/2 transform -translate-x-1/2 
+            bg-green-600 text-white px-6 py-3 rounded-xl shadow-lg 
+            text-lg font-semibold z-50
+            opacity-100 translate-y-0
+            transition-all duration-700 ease-in-out
+          "
+          style={{  
+            opacity: welcomeMessageVisible ? 1 : 0,
+            transform: welcomeMessageVisible ? 'translate(-50%, 0)' : 'translate(-50%, -20px)',
+          }}
+        >
+          Bienvenido {isAdmin ? 'Administrador' : 'Cliente'} <span className="capitalize">{userData.name}</span>!
+        </div>
+      )}
+
       <div className={`p-6 transition duration-300 ${isModalOpen ? 'blur-sm brightness-50 pointer-events-none' : ''}`}>
         {!isLoggedIn ? (
           <div className="flex flex-col items-center justify-center min-h-[calc(100vh-80px)] text-center">
@@ -120,7 +149,7 @@ function Profile() {
               {activeSection === 'info' && (
                 <div className="space-y-6 ">
                   <h2 className="text-3xl font-bold text-gray-700 text-center">Información del Usuario</h2>
-                  
+
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 text-gray-700">
                     <div className="bg-gray-50 p-4 rounded-lg shadow-sm border">
                       <p className="text-sm font-medium text-gray-500">Nombre</p>
@@ -189,6 +218,7 @@ function Profile() {
             if (storedUser) {
               setUserData(JSON.parse(storedUser));
               setIsLoggedIn(true);
+              setWelcomeMessageVisible(true); 
             }
             setShowLogin(false);
           }}
@@ -203,7 +233,7 @@ function Profile() {
             setShowRegister(false);
           }}
         />
-        
+
       )}
 
       {showChangePassword && userData && (

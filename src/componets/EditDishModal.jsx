@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 
+const validCategories = ['tradicionales', 'postres', 'bebidas'];
+
 const EditDishModal = ({ dish, onClose, onDishUpdated }) => {
   const [formData, setFormData] = useState({
     name: dish.name,
@@ -13,20 +15,23 @@ const EditDishModal = ({ dish, onClose, onDishUpdated }) => {
   const [error, setError] = useState('');
 
   const handleNameChange = (e) => {
-    const value = e.target.value;
+    let value = e.target.value;
+    if (value.length > 30) value = value.slice(0, 30);
     const cleaned = value.replace(/[^a-zA-Z0-9 áéíóúÁÉÍÓÚñÑ]/g, '');
     setFormData({ ...formData, name: cleaned });
   };
 
   const handleDescriptionChange = (e) => {
-    const value = e.target.value;
+    let value = e.target.value;
+    if (value.length > 150) value = value.slice(0, 150);
     const cleaned = value.replace(/[^a-zA-Z0-9.,;:()¡!¿?%° \náéíóúÁÉÍÓÚñÑ]/g, '');
     setFormData({ ...formData, description: cleaned });
   };
 
   const handleCategoryChange = (e) => {
-    const value = e.target.value;
-    const cleaned = value.replace(/[^a-zA-Z0-9 áéíóúÁÉÍÓÚñÑ]/g, '');
+    let value = e.target.value.toLowerCase();
+    if (value.length > 15) value = value.slice(0, 15);
+    const cleaned = value.replace(/[^a-z]/g, '');
     setFormData({ ...formData, category: cleaned });
   };
 
@@ -41,8 +46,18 @@ const EditDishModal = ({ dish, onClose, onDishUpdated }) => {
 
     const { name, description, price, category, image } = formData;
 
-    if (!name || !description || !price || !category) {
+    if (!name.trim() || !description.trim() || !price || !category.trim()) {
       setError('Por favor, completa todos los campos.');
+      return;
+    }
+
+    if (name.length > 30) {
+      setError('El nombre debe tener máximo 30 caracteres.');
+      return;
+    }
+
+    if (description.length > 150) {
+      setError('La descripción debe tener máximo 150 caracteres.');
       return;
     }
 
@@ -51,11 +66,16 @@ const EditDishModal = ({ dish, onClose, onDishUpdated }) => {
       return;
     }
 
+    if (!validCategories.includes(category.toLowerCase())) {
+      setError(`La categoría debe ser una de las siguientes: ${validCategories.join(', ')}`);
+      return;
+    }
+
     const updatedData = new FormData();
     updatedData.append('name', name);
     updatedData.append('description', description);
     updatedData.append('price', price);
-    updatedData.append('category', category);
+    updatedData.append('category', category.toLowerCase());
     if (image) updatedData.append('image', image);
 
     try {
@@ -92,8 +112,10 @@ const EditDishModal = ({ dish, onClose, onDishUpdated }) => {
               type="text"
               value={formData.name}
               onChange={handleNameChange}
+              maxLength={30}
               className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring focus:border-brown-400"
             />
+            <small className="text-gray-500 text-xs">Máximo 30 caracteres</small>
           </div>
           <div>
             <label className="block text-gray-700 mb-1">Descripción:</label>
@@ -101,14 +123,16 @@ const EditDishModal = ({ dish, onClose, onDishUpdated }) => {
               value={formData.description}
               onChange={handleDescriptionChange}
               rows={3}
+              maxLength={150}
               className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring focus:border-brown-400"
             ></textarea>
+            <small className="text-gray-500 text-xs">Máximo 150 caracteres</small>
           </div>
           <div>
             <label className="block text-gray-700 mb-1">Precio:</label>
             <input
               type="number"
-              min="0"
+              min="0.25"
               step="0.01"
               value={formData.price}
               onChange={(e) => setFormData({ ...formData, price: e.target.value })}
@@ -122,6 +146,7 @@ const EditDishModal = ({ dish, onClose, onDishUpdated }) => {
               value={formData.category}
               onChange={handleCategoryChange}
               className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring focus:border-brown-400"
+              placeholder="tradicionales, postres o bebidas"
             />
           </div>
           <div>
